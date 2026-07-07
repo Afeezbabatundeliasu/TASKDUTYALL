@@ -1,0 +1,60 @@
+import axios from 'axios';
+import type { Task, TaskInput } from '../types';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+export const api = axios.create({
+  baseURL: API_BASE,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export const fetchTasks = async (): Promise<Task[]> => {
+  const response = await api.get('/tasks');
+  return response.data;
+};
+
+export const createTask = async (task: TaskInput): Promise<Task> => {
+  const response = await api.post('/tasks', task);
+  return response.data;
+};
+
+export const updateTask = async (id: string, updates: Partial<TaskInput>): Promise<Task> => {
+  const response = await api.put(`/tasks/${id}`, updates);
+  return response.data;
+};
+
+export const deleteTask = async (id: string): Promise<void> => {
+  await api.delete(`/tasks/${id}`);
+};
+
+// ... existing login, register functions ...
+export const updateProfile = async (data: { name?: string; currentPassword?: string; newPassword?: string }) => {
+  const token = localStorage.getItem('token');
+  const res = await axios.put(`${API_BASE}/auth/profile`, data, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return res.data;
+};
+
+export const fetchTrashedTasks = async (): Promise<Task[]> => {
+  const res = await api.get('/tasks/bin');
+  return res.data;
+};
+
+export const restoreTask = async (id: string): Promise<Task> => {
+  const res = await api.put(`/tasks/${id}/restore`);
+  return res.data;
+};
+
+export const permanentDeleteTask = async (id: string): Promise<void> => {
+  await api.delete(`/tasks/${id}/permanent`);
+};
