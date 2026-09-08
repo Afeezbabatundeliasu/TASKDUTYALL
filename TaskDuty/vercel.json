@@ -1,25 +1,17 @@
 {
   "builds": [
     {
-      "src": "ClientSide/vite-project/package.json",
+      "src": "TaskDuty/ClientSide/vite-project/package.json",
       "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "config": { "distDir": "dist" }
     },
     {
-      "src": "ServerSide/index.js",
+      "src": "TaskDuty/ServerSide/src/server.ts",
       "use": "@vercel/node"
     }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/ServerSide/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/ClientSide/vite-project/dist/index.html"
-    }
+    { "src": "/api/(.*)", "dest": "/TaskDuty/ServerSide/src/server.ts" },
+    { "src": "/(.*)", "dest": "/TaskDuty/ClientSide/vite-project/src/app.tsx" }
   ]
 }
